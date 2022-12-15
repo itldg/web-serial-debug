@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Serial-浏览器串口调试工具</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        hideTop = function () {
+            var header = document.querySelector('.bd-header');
+            header.remove();
+            document.documentElement.style.setProperty('--top-height', '0px');
+        }
+    </script>
+</head>
+
+<body>
+    <header class="bd-header bg-dark py-3 d-flex align-items-stretch border-bottom border-dark">
+        <div class="container-fluid d-flex align-items-center">
+            <h1 class="d-flex align-items-center fs-4 text-white mb-0">
+                <img src="imgs/logo.svg" width="38" height="30" class="me-3" alt="Web Serial">
+                Web Serial
+            </h1>
+            <span class="ms-auto">
+                <span class="link-light">代码已开源:</span>
+                <a href="/docs/examples/cheatsheet-rtl/" class="link-light">Github</a>
+                <a href="/docs/examples/cheatsheet-rtl/" class="link-light">Gitee</a>
+                <a href="javascript:hideTop()" class="link-light ml-2">隐藏头部</a>
+            </span>
+        </div>
+    </header>
+    <div id="main" class="d-flex">
+        <!--左侧串口配置-->
+        <div id="serial-options" class="col-auto m-0 bg-light sidebar">
+            <div class="collapse show p-2 float-start">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">波特率</span>
+                    <input type="number" id="serial-baud" class="form-control" placeholder="选择波特率" list="baud-list">
+                    <datalist id="baud-list">
+                        <option>110</option>
+                        <option>300</option>
+                        <option>600</option>
+                        <option>1200</option>
+                        <option>2400</option>
+                        <option>4800</option>
+                        <option>7200</option>
+                        <option>9600</option>
+                        <option>14400</option>
+                        <option>19200</option>
+                        <option>28800</option>
+                        <option>38400</option>
+                        <option>56000</option>
+                        <option>57600</option>
+                        <option>76800</option>
+                        <option>115200</option>
+                        <option>230400</option>
+                        <option>460800</option>
+                    </datalist>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">数据位</span>
+                    <select class="form-select" id="serial-data-bits">
+                        <option>8</option>
+                        <option>7</option>
+                    </select>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">停止位</span>
+                    <select class="form-select" id="serial-stop-bits">
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">校验位</span>
+                    <select class="form-select" id="serial-parity">
+                        <Option value="none">None</Option>
+                        <Option value="even">Even</Option>
+                        <Option value="odd">Odd</Option>
+                    </select>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">缓冲区</span>
+                    <input type="number" id="serial-buffer-size" class="form-control" placeholder="缓冲区大小"
+                        list="buffer-size-list" max="1677216">
+                    <datalist id="buffer-size-list">
+                        <option>255</option>
+                        <option>512</option>
+                        <option>1024</option>
+                        <option>2048</option>
+                        <option>4096</option>
+                        <option>8192</option>
+                    </datalist>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">流控制</span>
+                    <select class="form-select" id="serial-flow-control">
+                        <Option value="none">None</Option>
+                        <Option value="hardware">HardWare</Option>
+                    </select>
+                </div>
+
+                <div class="d-flex mt-2 justify-between">
+                    <button type="button" class="btn btn-secondary me-3" id="serial-select-port">选择串口</button>
+                    <button type="button" class="btn btn-primary flex-grow-1" id="serial-open-or-close">打开串口</button>
+                </div>
+            </div>
+            <button type="button" class="toggle-button float-end">
+                <i class="bi bi-chevron-compact-left"></i>
+            </button>
+
+        </div>
+        <div class="clear"></div>
+        <!--中间串口日志-->
+        <div id="log-main" class="flex-fill px-md-2">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mb-1 flex-shrink-0">
+                <h1 class="h3">串口日志</h1>
+
+                <div class="btn-toolbar">
+                    <div class="input-group me-2">
+                        <span class="input-group-text">分包超时</span>
+                        <input type="number" id="serial-timer-out" class="form-control" placeholder="0不分包" value="50"
+                            style="width: 100px;" />
+                    </div>
+
+                    <div class="input-group me-2">
+                        <span class="input-group-text">日志类型</span>
+                        <select class="form-select" id="serial-log-type" style="width: 120px;">
+                            <Option value="hex">Hex</Option>
+                            <Option value="ascii">ASCII</Option>
+                            <Option value="hex&ascii">全部</Option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                            id="serial-auto-scroll">暂停滚动</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-clear">清空</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-copy">复制</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-save">导出</button>
+                    </div>
+                </div>
+            </div>
+            <div id="serial-logs" class="flex-grow-1 flex-grow-1 border border-2 rounded mb-2">
+            </div>
+            <div class="flex-shrink-0 mb-2">
+                <textarea class="form-control" rows="3" id="serial-send-content" style="resize: none;"
+                    placeholder="在此输入要发送的内容,可以是字符串(如:你好,世界!),也可以是HEX(如:49544c4447)"></textarea>
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mb-1 flex-shrink-0">
+                    <div class="btn-toolbar">
+                        <div class="form-check align-self-center me-2">
+                            <input class="form-check-input" type="checkbox" id="serial-add-crlf">
+                            <label class="form-check-label" for="serial-add-crlf">
+                                末尾加回车换行
+                            </label>
+                        </div>
+                        <div class="form-check align-self-center me-2">
+                            <input class="form-check-input" type="checkbox" id="serial-hex-send">
+                            <label class="form-check-label" for="serial-hex-send">
+                                HEX发送
+                            </label>
+                        </div>
+                        <div class="form-check align-self-center me-2">
+                            <input class="form-check-input" type="checkbox" id="serial-loop-send">
+                            <label class="form-check-label" for="serial-loop-send">
+                                循环发送
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">发送间隔(MS)</span>
+                            <input type="number" id="serial-loop-send-time" class="form-control" placeholder="" min="1"
+                                value="1000" style="width: 100px;" />
+                        </div>
+                    </div>
+                    <button type="button" id="serial-send" class="btn btn-primary h-10 px-5">发送</button>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+
+        <!--右侧串口工具-->
+        <!-- <div id="serial-tools" class="col-auto m-0 bg-light sidebar">
+            <button type="button" class="toggle-button float-start">
+                <i class="bi bi-chevron-compact-right"></i>
+            </button>
+            <div class="collapse show p-2">
+                待开发
+            </div>
+        </div> -->
+    </div>
+
+
+
+    <div class="modal fade" id="model-tip" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modal-title"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-message">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">好的</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+
+</body>
+
+</html>
