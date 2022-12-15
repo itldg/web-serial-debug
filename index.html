@@ -31,8 +31,8 @@
             </h1>
             <span class="ms-auto">
                 <span class="link-light">代码已开源:</span>
-                <a href="https://github.com/itldg/web-serial-debug" class="link-light">Github</a>
-                <a href="https://gitee.com/itldg/web-serial-debug" class="link-light">Gitee</a>
+                <a href="https://github.com/itldg/web-serial-debug" target="_blank" class="link-light">Github</a>
+                <a href="https://gitee.com/itldg/web-serial-debug" target="_blank" class="link-light">Gitee</a>
                 <a href="javascript:hideTop()" class="link-light ml-2">隐藏头部</a>
             </span>
         </div>
@@ -140,15 +140,15 @@
                     <div class="input-group me-2">
                         <span class="input-group-text">日志类型</span>
                         <select class="form-select" id="serial-log-type" style="width: 120px;">
+                            <Option value="hex&ascii">全部</Option>
                             <Option value="hex">Hex</Option>
                             <Option value="ascii">ASCII</Option>
-                            <Option value="hex&ascii">全部</Option>
                         </select>
                     </div>
 
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-outline-secondary"
-                            id="serial-auto-scroll">暂停滚动</button>
+                            id="serial-auto-scroll">自动滚动</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-clear">清空</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-copy">复制</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-save">导出</button>

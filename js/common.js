@@ -26,7 +26,7 @@
 		//显示时间 界面未开放
 		showTime: true,
 		//日志类型
-		logType: 'hex',
+		logType: 'hex&ascii',
 		//分包合并时间
 		timeOut: 50,
 		//末尾加回车换行

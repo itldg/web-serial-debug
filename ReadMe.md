@@ -4,6 +4,8 @@
 
 仅测试了 Edge 和 Chrome 浏览器,其他浏览器未测试是否可用
 
+在线体验: [https://itldg.github.io/web-serial-debug/](https://itldg.github.io/web-serial-debug/)
+
 ## 界面预览
 
 ![界面预览](/imgs/main.png)
