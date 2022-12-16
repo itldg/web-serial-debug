@@ -119,7 +119,7 @@
                     </select>
                 </div>
 
-                <div class="d-flex mt-2 justify-between">
+                <div class="d-flex mt-2">
                     <button class="btn btn-secondary me-3" id="serial-select-port">选择串口</button>
                     <button class="btn btn-primary flex-grow-1" id="serial-open-or-close">打开串口</button>
                 </div>
@@ -209,44 +209,72 @@
             <button class="toggle-button float-start" title="隐藏/打开边栏">
                 <i class="bi bi-chevron-compact-right"></i>
             </button>
-            <div class="collapse show p-1 float-start" style="width:428px">
-                <div class="btn-toolbar">
-                    <div class="flex-grow-1 input-group input-group-sm me-2">
-                        <span class="input-group-text">快捷发送</span>
-                        <select class="form-select" id="serial-quick-send">
-                        </select>
-                    </div>
+            <div class="collapse show p-1 float-start overflow-hidden" style="width:428px">
 
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-secondary" id="serial-quick-send-add-group">新增</button>
-                        <button class="btn btn-sm btn-outline-secondary" id="serial-quick-send-rename-group">改名</button>
-                        <button class="btn btn-sm btn-outline-secondary" id="serial-quick-send-remove-group">删除</button>
-                        <!-- <button class="btn btn-sm btn-outline-secondary">云端</button> -->
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-quick-send-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-quick-send" type="button" role="tab" aria-controls="nav-quick-send"
+                            aria-selected="true">快捷发送</button>
+                        <button class="nav-link" id="nav-options-tab" data-bs-toggle="tab" data-bs-target="#nav-options"
+                            type="button" role="tab" aria-controls="nav-options" aria-selected="false">系统选项</button>
+                    </div>
+                </nav>
+                <div class="tab-content pt-2 flex-fill" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-quick-send" role="tabpanel"
+                        aria-labelledby="nav-quick-send-tab">
+                        <div class="btn-toolbar">
+                            <div class="flex-grow-1 input-group input-group-sm me-2">
+                                <span class="input-group-text">选择分组</span>
+                                <select class="form-select" id="serial-quick-send">
+                                </select>
+                            </div>
+
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-secondary"
+                                    id="serial-quick-send-add-group">新增</button>
+                                <button class="btn btn-sm btn-outline-secondary"
+                                    id="serial-quick-send-rename-group">改名</button>
+                                <button class="btn btn-sm btn-outline-secondary"
+                                    id="serial-quick-send-remove-group">删除</button>
+                                <!-- <button class="btn btn-sm btn-outline-secondary">云端</button> -->
+                            </div>
+                        </div>
+                        <div class="d-flex mt-2">
+                            <button id="serial-quick-send-add" class="btn btn-sm btn-outline-secondary me-5"><i
+                                    class="bi bi-plus-square"></i> 增加一条</button>
+                            <button class="btn btn-sm btn-outline-secondary me-2 flex-grow-1"
+                                id="serial-quick-send-import-btn"><i class="bi bi-folder-plus"></i>
+                                导入</button>
+                            <input type="file" id="serial-quick-send-import" style="display: none;"
+                                accept="application/json" />
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1"
+                                id="serial-quick-send-export"><i class="bi bi-folder-symlink"></i>
+                                导出</button>
+                        </div>
+                        <div class="mt-2">
+                            <div class="d-flex">
+                                <span class="me-2 ms-3">移除</span>
+                                <span class="flex-grow-1 me-1">发送内容,点击修改,双击改名</span>
+                                <span class="flex-shrink-0 me-3">显示名称</span>
+                                <span class="flex-shrink-0 me-2">HEX</span>
+                            </div>
+                        </div>
+                        <div id="serial-quick-send-content"
+                            class="flex-grow-1 border border-2 p-2 rounded overflow-auto">
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-options" role="tabpanel" aria-labelledby="nav-options-tab">
+                        <h5>系统配置</h5>
+                        <button class="btn btn-sm btn-outline-secondary me-2" id="serial-reset"><i
+                                class="bi bi-arrow-repeat"></i> 重置参数</button>
+                        <button class="btn btn-sm btn-outline-secondary me-2" id="serial-export"><i
+                                class="bi bi-folder-symlink"></i> 导出配置</button>
+                        <button class="btn btn-sm btn-outline-secondary me-2" id="serial-import"><i
+                                class="bi bi-folder-plus"></i> 导入配置</button>
+                        <input type="file" id="serial-import-file" style="display: none;" accept="application/json" />
                     </div>
                 </div>
-                <div class="d-flex mt-2 justify-between">
-                    <button id="serial-quick-send-add" class="btn btn-sm btn-outline-secondary me-5"><i
-                            class="bi bi-plus-square"></i> 增加一条</button>
-                    <button class="btn btn-sm btn-outline-secondary me-2 flex-grow-1"
-                        id="serial-quick-send-import-btn"><i class="bi bi-folder-plus"></i>
-                        导入</button>
-                    <input type="file" id="serial-quick-send-import" style="display: none;" accept="application/json" />
-                    <button class="btn btn-sm btn-outline-secondary flex-grow-1" id="serial-quick-send-export"><i
-                            class="bi bi-folder-symlink"></i>
-                        导出</button>
-                </div>
-                <div class="mt-2">
-                    <div class="d-flex">
-                        <span class="me-2 ms-3">移除</span>
-                        <span class="flex-grow-1 me-1">发送内容,点击修改,双击改名</span>
-                        <span class="flex-shrink-0 me-3">显示名称</span>
-                        <span class="flex-shrink-0 me-2">HEX</span>
-                    </div>
-                </div>
-                <div id="serial-quick-send-content" class="flex-grow-1 border border-2 p-2 rounded overflow-auto">
-                </div>
-
-
             </div>
         </div>
     </div>

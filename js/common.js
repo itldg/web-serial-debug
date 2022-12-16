@@ -310,6 +310,68 @@
 		reader.readAsText(file)
 	})
 
+	//重置参数
+	document.getElementById('serial-reset').addEventListener('click', (e) => {
+		if (!confirm('是否重置参数?')) {
+			return
+		}
+		localStorage.removeItem('serialOptions')
+		localStorage.removeItem('toolOptions')
+		localStorage.removeItem('quickSendList')
+		location.reload()
+	})
+	//导出参数
+	document.getElementById('serial-export').addEventListener('click', (e) => {
+		let data = {
+			serialOptions: localStorage.getItem('serialOptions'),
+			toolOptions: localStorage.getItem('toolOptions'),
+			quickSendList: localStorage.getItem('quickSendList'),
+		}
+		let blob = new Blob([JSON.stringify(data)], { type: 'text/plain' })
+		saveAs(blob, 'web-serial-debug.json')
+	})
+	//导入参数
+	document.getElementById('serial-import').addEventListener('click', (e) => {
+		document.getElementById('serial-import-file').click()
+	})
+	document.getElementById('serial-import-file').addEventListener('change', (e) => {
+		let file = e.target.files[0]
+		e.target.value = ''
+		let reader = new FileReader()
+		reader.onload = function (e) {
+			let data = e.target.result
+			try {
+				let obj = JSON.parse(data)
+				if(obj.serialOptions==null)
+				{
+					localStorage.removeItem('serialOptions')
+				}else{
+					localStorage.setItem('serialOptions', obj.serialOptions)
+				}
+				if(obj.toolOptions==null)
+				{
+					localStorage.removeItem('toolOptions')
+				}else{
+					localStorage.setItem('toolOptions', obj.toolOptions)
+				}
+				if(obj.quickSendList==null)
+				{
+					localStorage.removeItem('quickSendList')
+				}else{
+					localStorage.setItem('quickSendList', obj.quickSendList)
+				}
+				
+				location.reload()
+			} catch (e) {
+				showMsg('导入失败:' + e.message)
+			}
+		}
+		reader.readAsText(file)
+	})
+
+
+
+
 	//读取参数
 	let options = localStorage.getItem('serialOptions')
 	if (options) {

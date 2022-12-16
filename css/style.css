@@ -45,7 +45,11 @@ body {
 #serial-tools {
 	height: 100%;
 }
-#serial-tools .collapse.show {
+#nav-tabContent {
+	overflow: hidden;
+}
+#serial-tools .collapse.show,
+#nav-quick-send.show {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
