@@ -19,6 +19,7 @@ body {
 }
 #serial-logs {
 	overflow-y: scroll;
+	white-space: pre-wrap;
 }
 #serial-options,
 #serial-tools {
