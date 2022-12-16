@@ -40,3 +40,12 @@ body {
 .toggle-button:hover {
 	background: rgba(228, 231, 242, 0.4);
 }
+
+#serial-tools {
+	height: 100%;
+}
+#serial-tools .collapse.show {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}

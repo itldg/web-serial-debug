@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Serial-浏览器串口调试工具</title>
+    <title>Web Serial Debug-浏览器串口调试工具</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
@@ -31,7 +31,7 @@
         <div class="container-fluid d-flex align-items-center">
             <h1 class="d-flex align-items-center fs-4 text-white mb-0">
                 <img src="imgs/logo.svg" width="38" height="30" class="me-3" alt="Web Serial">
-                Web Serial
+                Web Serial Debug
             </h1>
             <span class="ms-auto">
                 <span class="link-light">代码已开源:</span>
@@ -41,13 +41,15 @@
             </span>
         </div>
     </header>
+
     <div id="main" class="d-flex">
         <!--左侧串口配置-->
         <div id="serial-options" class="col-auto m-0 bg-light sidebar">
             <div class="collapse show p-2 float-start">
                 <div class="input-group mb-3">
                     <span class="input-group-text">波特率</span>
-                    <input type="number" id="serial-baud" class="form-control" placeholder="选择波特率" list="baud-list">
+                    <input type="number" id="serial-baud" class="form-control" placeholder="选择波特率" value="115200"
+                        list="baud-list">
                     <datalist id="baud-list">
                         <option>110</option>
                         <option>300</option>
@@ -98,7 +100,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text">缓冲区</span>
                     <input type="number" id="serial-buffer-size" class="form-control" placeholder="缓冲区大小"
-                        list="buffer-size-list" max="1677216">
+                        list="buffer-size-list" max="1677216" value="1024">
                     <datalist id="buffer-size-list">
                         <option>255</option>
                         <option>512</option>
@@ -118,11 +120,17 @@
                 </div>
 
                 <div class="d-flex mt-2 justify-between">
-                    <button type="button" class="btn btn-secondary me-3" id="serial-select-port">选择串口</button>
-                    <button type="button" class="btn btn-primary flex-grow-1" id="serial-open-or-close">打开串口</button>
+                    <button class="btn btn-secondary me-3" id="serial-select-port">选择串口</button>
+                    <button class="btn btn-primary flex-grow-1" id="serial-open-or-close">打开串口</button>
+                </div>
+
+                <div id="serial-status" class="mt-2">
+                    <div class="alert alert-info" role="alert">
+                        未选择串口
+                    </div>
                 </div>
             </div>
-            <button type="button" class="toggle-button float-end">
+            <button class="toggle-button float-end" title="隐藏/打开边栏">
                 <i class="bi bi-chevron-compact-left"></i>
             </button>
 
@@ -135,13 +143,13 @@
                 <h1 class="h3">串口日志</h1>
 
                 <div class="btn-toolbar">
-                    <div class="input-group me-2">
+                    <div class="input-group input-group-sm me-2">
                         <span class="input-group-text">分包超时</span>
                         <input type="number" id="serial-timer-out" class="form-control" placeholder="0不分包" value="50"
                             style="width: 100px;" />
                     </div>
 
-                    <div class="input-group me-2">
+                    <div class="input-group input-group-sm me-2">
                         <span class="input-group-text">日志类型</span>
                         <select class="form-select" id="serial-log-type" style="width: 120px;">
                             <Option value="hex&ascii">全部</Option>
@@ -151,15 +159,14 @@
                     </div>
 
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                            id="serial-auto-scroll">自动滚动</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-clear">清空</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-copy">复制</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="serial-save">导出</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="serial-auto-scroll">自动滚动</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="serial-clear">清空</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="serial-copy">复制</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="serial-save">导出</button>
                     </div>
                 </div>
             </div>
-            <div id="serial-logs" class="flex-grow-1 flex-grow-1 border border-2 rounded mb-2">
+            <div id="serial-logs" class="flex-grow-1 border border-2 rounded mb-2">
             </div>
             <div class="flex-shrink-0 mb-2">
                 <textarea class="form-control" rows="3" id="serial-send-content" style="resize: none;"
@@ -185,27 +192,64 @@
                                 循环发送
                             </label>
                         </div>
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <span class="input-group-text">发送间隔(MS)</span>
                             <input type="number" id="serial-loop-send-time" class="form-control" placeholder="" min="1"
                                 value="1000" style="width: 100px;" />
                         </div>
                     </div>
-                    <button type="button" id="serial-send" class="btn btn-primary h-10 px-5">发送</button>
+                    <button id="serial-send" class="btn btn-primary h-10 px-5"><i class="bi bi-send"></i>
+                        发送</button>
                 </div>
             </div>
         </div>
         <div class="clear"></div>
 
         <!--右侧串口工具-->
-        <!-- <div id="serial-tools" class="col-auto m-0 bg-light sidebar">
-            <button type="button" class="toggle-button float-start">
+        <div id="serial-tools" class="col-auto m-0 bg-light sidebar">
+            <button class="toggle-button float-start" title="隐藏/打开边栏">
                 <i class="bi bi-chevron-compact-right"></i>
             </button>
-            <div class="collapse show p-2">
-                待开发
+            <div class="collapse show p-1 float-start" style="width:428px">
+                <div class="btn-toolbar">
+                    <div class="flex-grow-1 input-group input-group-sm me-2">
+                        <span class="input-group-text">快捷发送</span>
+                        <select class="form-select" id="serial-quick-send">
+                        </select>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary" id="serial-quick-send-add-group">新增</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="serial-quick-send-rename-group">改名</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="serial-quick-send-remove-group">删除</button>
+                        <!-- <button class="btn btn-sm btn-outline-secondary">云端</button> -->
+                    </div>
+                </div>
+                <div class="d-flex mt-2 justify-between">
+                    <button id="serial-quick-send-add" class="btn btn-sm btn-outline-secondary me-5"><i
+                            class="bi bi-plus-square"></i> 增加一条</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2 flex-grow-1"
+                        id="serial-quick-send-import-btn"><i class="bi bi-folder-plus"></i>
+                        导入</button>
+                    <input type="file" id="serial-quick-send-import" style="display: none;" accept="application/json" />
+                    <button class="btn btn-sm btn-outline-secondary flex-grow-1" id="serial-quick-send-export"><i
+                            class="bi bi-folder-symlink"></i>
+                        导出</button>
+                </div>
+                <div class="mt-2">
+                    <div class="d-flex">
+                        <span class="me-2 ms-3">移除</span>
+                        <span class="flex-grow-1 me-1">发送内容,点击修改,双击改名</span>
+                        <span class="flex-shrink-0 me-3">显示名称</span>
+                        <span class="flex-shrink-0 me-2">HEX</span>
+                    </div>
+                </div>
+                <div id="serial-quick-send-content" class="flex-grow-1 border border-2 p-2 rounded overflow-auto">
+                </div>
+
+
             </div>
-        </div> -->
+        </div>
     </div>
 
 
@@ -215,7 +259,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="modal-title"></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modal-message">
                 </div>
@@ -226,6 +270,28 @@
         </div>
     </div>
 
+    <div class="modal fade" id="model-change-name" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">名称</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="model-new-name" class="col-form-label">请输入新的名字:</label>
+                            <input type="text" class="form-control" id="model-new-name">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="model-save-name">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="js/common.js"></script>
 
 </body>

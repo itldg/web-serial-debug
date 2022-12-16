@@ -6,6 +6,8 @@
 
 在线体验: [https://itldg.github.io/web-serial-debug/](https://itldg.github.io/web-serial-debug/)
 
+国内体验: [https://itldg.gitee.io/web-serial-debug/](https://itldg.gitee.io/web-serial-debug/)
+
 ## 界面预览
 
 ![界面预览](/imgs/main.png)
@@ -16,6 +18,7 @@
 -   所有串口参数可设置更改,配置自动保存
 -   串口日志支持 HEX 和 ASCII,自动滚动
 -   分包合并,设定超时时间
+-   快捷发送列表,自定义分组,快捷导入导出
 
 ## 使用方法
 
@@ -27,10 +30,14 @@
 
 下方是发送区域,可以选择 HEX 或者 ASCII 发送,定时循环发送
 
+右侧可以自己添加一些常用指令,快捷发送
+
 ## 开源
 
 代码凌乱不堪，无学习价值
 
 希望各位大佬可以协助添砖加瓦，让其更加完善
+
+常用的朋友也可以提交一些常用的指令集,后续做一下常用指令集的整理
 
 开源地址：[GitHub](https://github.com/itldg/web-serial-debug) | [Gitee](https://gitee.com/itldg/web-serial-debug)
