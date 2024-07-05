@@ -6,7 +6,7 @@
 
 在线体验: [https://itldg.github.io/web-serial-debug/](https://itldg.github.io/web-serial-debug/)
 
-国内体验: [https://itldg.gitee.io/web-serial-debug/](https://itldg.gitee.io/web-serial-debug/)
+国内体验: [https://www.itldg.com/web_serial_debug/](https://www.itldg.com/web_serial_debug/)
 
 ## 界面预览
 
