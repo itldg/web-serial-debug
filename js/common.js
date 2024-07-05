@@ -342,25 +342,22 @@
 			let data = e.target.result
 			try {
 				let obj = JSON.parse(data)
-				if(obj.serialOptions==null)
-				{
+				if (obj.serialOptions == null) {
 					localStorage.removeItem('serialOptions')
-				}else{
+				} else {
 					localStorage.setItem('serialOptions', obj.serialOptions)
 				}
-				if(obj.toolOptions==null)
-				{
+				if (obj.toolOptions == null) {
 					localStorage.removeItem('toolOptions')
-				}else{
+				} else {
 					localStorage.setItem('toolOptions', obj.toolOptions)
 				}
-				if(obj.quickSendList==null)
-				{
+				if (obj.quickSendList == null) {
 					localStorage.removeItem('quickSendList')
-				}else{
+				} else {
 					localStorage.setItem('quickSendList', obj.quickSendList)
 				}
-				
+
 				location.reload()
 			} catch (e) {
 				showMsg('导入失败:' + e.message)
@@ -368,9 +365,6 @@
 		}
 		reader.readAsText(file)
 	})
-
-
-
 
 	//读取参数
 	let options = localStorage.getItem('serialOptions')
@@ -687,7 +681,8 @@
 			if (toolOptions.logType.includes('&')) {
 				newmsg += 'TXT:'
 			}
-			newmsg += dataAscii + '<br/>'
+			//转义HTML标签,防止内容被当作标签渲染
+			newmsg += HTMLEncode(dataAscii) + '<br/>'
 		}
 		let time = toolOptions.showTime ? formatDate(new Date()) + '&nbsp;' : ''
 		const template = '<div><span class="' + classname + '">' + time + form + '</span><br>' + newmsg + '</div>'
@@ -698,7 +693,22 @@
 			serialLogs.scrollTop = serialLogs.scrollHeight - serialLogs.clientHeight
 		}
 	}
-
+	//HTML转义
+	function HTMLEncode(html) {
+		var temp = document.createElement('div')
+		temp.textContent != null ? (temp.textContent = html) : (temp.innerText = html)
+		var output = temp.innerHTML
+		temp = null
+		return output
+	}
+	//HTML反转义
+	function HTMLDecode(text) {
+		var temp = document.createElement('div')
+		temp.innerHTML = text
+		var output = temp.innerText || temp.textContent
+		temp = null
+		return output
+	}
 	//系统日志
 	function addLogErr(msg) {
 		let time = toolOptions.showTime ? formatDate(new Date()) + '&nbsp;' : ''
