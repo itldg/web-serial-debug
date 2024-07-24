@@ -116,6 +116,7 @@
 			],
 		},
 	]
+	let worker = null
 	//工具配置
 	let toolOptions = {
 		//自动滚动
@@ -309,7 +310,6 @@
 		}
 		reader.readAsText(file)
 	})
-
 	//重置参数
 	document.getElementById('serial-reset').addEventListener('click', (e) => {
 		if (!confirm('是否重置参数?')) {
@@ -318,6 +318,7 @@
 		localStorage.removeItem('serialOptions')
 		localStorage.removeItem('toolOptions')
 		localStorage.removeItem('quickSendList')
+		localStorage.removeItem('code')
 		location.reload()
 	})
 	//导出参数
@@ -326,6 +327,7 @@
 			serialOptions: localStorage.getItem('serialOptions'),
 			toolOptions: localStorage.getItem('toolOptions'),
 			quickSendList: localStorage.getItem('quickSendList'),
+			code: localStorage.getItem('code'),
 		}
 		let blob = new Blob([JSON.stringify(data)], { type: 'text/plain' })
 		saveAs(blob, 'web-serial-debug.json')
@@ -334,6 +336,13 @@
 	document.getElementById('serial-import').addEventListener('click', (e) => {
 		document.getElementById('serial-import-file').click()
 	})
+	function setParam(key, value) {
+		if (value == null) {
+			localStorage.removeItem(key)
+		} else {
+			localStorage.setItem(key, value)
+		}
+	}
 	document.getElementById('serial-import-file').addEventListener('change', (e) => {
 		let file = e.target.files[0]
 		e.target.value = ''
@@ -342,22 +351,10 @@
 			let data = e.target.result
 			try {
 				let obj = JSON.parse(data)
-				if (obj.serialOptions == null) {
-					localStorage.removeItem('serialOptions')
-				} else {
-					localStorage.setItem('serialOptions', obj.serialOptions)
-				}
-				if (obj.toolOptions == null) {
-					localStorage.removeItem('toolOptions')
-				} else {
-					localStorage.setItem('toolOptions', obj.toolOptions)
-				}
-				if (obj.quickSendList == null) {
-					localStorage.removeItem('quickSendList')
-				} else {
-					localStorage.setItem('quickSendList', obj.quickSendList)
-				}
-
+				setParam('serialOptions', obj.serialOptions)
+				setParam('toolOptions', obj.toolOptions)
+				setParam('quickSendList', obj.quickSendList)
+				setParam('code', obj.code)
 				location.reload()
 			} catch (e) {
 				showMsg('导入失败:' + e.message)
@@ -365,7 +362,62 @@
 		}
 		reader.readAsText(file)
 	})
-
+	const serialCodeContent = document.getElementById('serial-code-content')
+	const serialCodeSelect = document.getElementById('serial-code-select')
+	const code = localStorage.getItem('code')
+	if (code) {
+		serialCodeContent.value = code
+	}
+	//代码编辑器
+	var editor = CodeMirror.fromTextArea(serialCodeContent, {
+		lineNumbers: true, // 显示行数
+		indentUnit: 4, // 缩进单位为4
+		styleActiveLine: true, // 当前行背景高亮
+		matchBrackets: true, // 括号匹配
+		mode: 'javascript', // 设置编辑器语言为JavaScript
+		// lineWrapping: true,    // 自动换行
+		theme: 'idea', // 主题
+	})
+	//读取本地文件
+	serialCodeSelect.onchange = function (e) {
+		var fr = new FileReader()
+		fr.onload = function () {
+			editor.setValue(fr.result)
+		}
+		fr.readAsText(this.files[0])
+	}
+	document.getElementById('serial-code-load').onclick = function () {
+		serialCodeSelect.click()
+	}
+	//运行或停止脚本
+	const code_editor_run = document.getElementById('serial-code-run')
+	code_editor_run.addEventListener('click', (e) => {
+		if (worker) {
+			worker.terminate()
+			worker = null
+			code_editor_run.innerHTML = '<i class="bi bi-play"></i>运行'
+			editor.setOption('readOnly', false)
+			editor.getWrapperElement().classList.remove("CodeMirror-readonly");
+			return
+		}
+		editor.setOption('readOnly', 'nocursor')
+		editor.getWrapperElement().classList.add("CodeMirror-readonly");
+		localStorage.setItem('code', editor.getValue())
+		code_editor_run.innerHTML = '<i class="bi bi-stop"></i>停止'
+		var blob = new Blob([editor.getValue()], { type: 'text/javascript' })
+		worker = new Worker(window.URL.createObjectURL(blob))
+		worker.onmessage = function (e) {
+			if (e.data.type == 'uart_send') {
+				writeData(new Uint8Array(e.data.data))
+			} else if (e.data.type == 'uart_send_hex') {
+				sendHex(e.data.data)
+			} else if (e.data.type == 'uart_send_txt') {
+				sendText(e.data.data)
+			} else if (e.data.type == 'log') {
+				addLogErr(e.data.data)
+			}
+		}
+	})
 	//读取参数
 	let options = localStorage.getItem('serialOptions')
 	if (options) {
@@ -643,6 +695,9 @@
 	function dataReceived(data) {
 		serialData.push(...data)
 		if (toolOptions.timeOut == 0) {
+			if (worker) {
+				worker.postMessage({ type: 'uart_receive', data: serialData })
+			}
 			addLog(serialData, true)
 			serialData = []
 			return
@@ -650,6 +705,9 @@
 		//清除之前的时钟
 		clearTimeout(serialTimer)
 		serialTimer = setTimeout(() => {
+			if (worker) {
+				worker.postMessage({ type: 'uart_receive', data: serialData })
+			}
 			//超时发出
 			addLog(serialData, true)
 			serialData = []

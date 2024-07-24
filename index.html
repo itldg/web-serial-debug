@@ -6,9 +6,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Serial Debug-浏览器串口调试工具</title>
+
+    <link href="https://cdn.bootcdn.net/ajax/libs/codemirror/5.65.16/codemirror.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/codemirror/5.65.16/theme/idea.min.css" rel="stylesheet">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="imgs/logo.svg" type="image/svg+xml">
     <script>
@@ -215,6 +224,9 @@
                             aria-selected="true">快捷发送</button>
                         <button class="nav-link" id="nav-options-tab" data-bs-toggle="tab" data-bs-target="#nav-options"
                             type="button" role="tab" aria-controls="nav-options" aria-selected="false">系统选项</button>
+                        <button class="nav-link" id="nav-code-tab" data-bs-toggle="tab" data-bs-target="#nav-code"
+                            type="button" role="tab" aria-controls="nav-code" aria-selected="false">代码脚本</button>
+
                     </div>
                 </nav>
                 <div class="tab-content pt-2 flex-fill" id="nav-tabContent">
@@ -270,6 +282,33 @@
                         <button class="btn btn-sm btn-outline-secondary me-2" id="serial-import"><i
                                 class="bi bi-folder-plus"></i> 导入配置</button>
                         <input type="file" id="serial-import-file" style="display: none;" accept="application/json" />
+                    </div>
+                    <div class="tab-pane d-flex flex-column fade" id="nav-code" role="tabpanel"
+                        aria-labelledby="nav-code-tab">
+                        <div class="flex-fill" id="serial-code-editor">
+                            <textarea class="form-control" rows="3" id="serial-code-content" style="resize: none;"
+                                placeholder="在此输入要执行的代码脚本">
+addEventListener('message', function ({data}) {
+    if(data.type=='uart_receive')
+    {
+        postMessage({type:'log',data:'消息长度:'+data.data.length});
+        //原文答复
+        postMessage({type:'uart_send',data:data.data});
+    }
+})
+setInterval(function(){
+    //定时发送
+    postMessage({type:'uart_send_txt',data:'hello world'});
+},1000);</textarea>
+                        </div>
+                        <div class="mt-2">
+                            <input id='serial-code-select' type='file' class="d-none">
+                            <button class="btn btn-sm btn-outline-secondary me-2" id="serial-code-load"><i
+                                    class="bi bi-folder2-open"></i> 打开文件</button>
+                            <button id="serial-code-run" class="btn btn-primary btn-sm float-end"><i
+                                    class="bi bi-play"></i>
+                                运行</button>
+                        </div>
                     </div>
                 </div>
             </div>

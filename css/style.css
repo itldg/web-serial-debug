@@ -55,3 +55,13 @@ body {
 	display: flex;
 	flex-direction: column;
 }
+#nav-code {
+	height: 100%;
+}
+#serial-code-editor .CodeMirror {
+	height: 100%;
+}
+.CodeMirror-readonly {
+	background-color: var(--bs-light-rgb);
+	cursor: not-allowed;
+}
