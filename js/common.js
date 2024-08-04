@@ -397,11 +397,11 @@
 			worker = null
 			code_editor_run.innerHTML = '<i class="bi bi-play"></i>运行'
 			editor.setOption('readOnly', false)
-			editor.getWrapperElement().classList.remove("CodeMirror-readonly");
+			editor.getWrapperElement().classList.remove('CodeMirror-readonly')
 			return
 		}
 		editor.setOption('readOnly', 'nocursor')
-		editor.getWrapperElement().classList.add("CodeMirror-readonly");
+		editor.getWrapperElement().classList.add('CodeMirror-readonly')
 		localStorage.setItem('code', editor.getValue())
 		code_editor_run.innerHTML = '<i class="bi bi-stop"></i>停止'
 		var blob = new Blob([editor.getValue()], { type: 'text/javascript' })
@@ -516,9 +516,7 @@
 		// 客户端授权
 		try {
 			await navigator.serial.requestPort().then(async (port) => {
-				//关闭旧的串口
-				serialPort?.close()
-				await serialPort?.forget()
+				closeSerial()
 				serialPort = port
 				serialStatuChange(true)
 			})
