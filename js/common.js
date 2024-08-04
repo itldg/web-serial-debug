@@ -475,6 +475,20 @@
 		resetLoopSend()
 	})
 
+	document.querySelectorAll('#serial-options .input-group input,#serial-options .input-group select').forEach((item) => {
+		item.addEventListener('change', async (e) => {
+			if (!serialOpen) {
+				return
+			}
+			//未找到API可以动态修改串口参数,先关闭再重新打开
+			await closeSerial()
+			//立即打开会提示串口已打开,延迟50ms再打开
+			setTimeout(() => {
+				openSerial()
+			}, 50)
+		})
+	})
+
 	//重制发送循环时钟
 	function resetLoopSend() {
 		clearInterval(serialloopSendTimer)
@@ -531,7 +545,6 @@
 			serialOpen = false
 			reader?.cancel()
 			serialToggle.innerHTML = '打开串口'
-			disabledOptions(false)
 		}
 	}
 
@@ -545,27 +558,19 @@
 			bufferSize: parseInt(get('serial-buffer-size')),
 			flowControl: get('serial-flow-control'),
 		}
-
+		// console.log('串口配置', JSON.stringify(SerialOptions))
 		serialPort
 			.open(SerialOptions)
 			.then(() => {
 				serialToggle.innerHTML = '关闭串口'
 				serialOpen = true
 				serialClose = false
-				disabledOptions(true)
 				localStorage.setItem('serialOptions', JSON.stringify(SerialOptions))
 				readData()
 			})
 			.catch((e) => {
 				showMsg('打开串口失败:' + e.toString())
 			})
-	}
-
-	//禁用或恢复串口选项
-	function disabledOptions(disabled) {
-		document.querySelectorAll('#serial-options .input-group input,#serial-options .input-group select').forEach((item) => {
-			item.disabled = disabled
-		})
 	}
 
 	//打开或关闭串口
